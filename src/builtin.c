@@ -7,14 +7,22 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include "../include/builtin.h"
-#include "../include/command.h"
 
 
-void builtInCommand(cmd *cmd){
-	int status = -1;
-	for (int i = 0; i < num_builtins(); ++i)
-		if (strcmp(cmd->head->args[0], builtin_str[i]) == 0)
-			status = (*builtin_func[i])(cmd->head->args);
+int searchBuiltInCommand(struct cmd *cmd)
+{
+	for (int i = 0; i < num_builtins(); ++i){
+		if (strcmp(cmd->head->args[0], builtin_str[i]) == 0){
+			printf("built-in command is %d\n",i);
+			return i;
+		}
+	}
+	printf("command is not built-in command\n");
+	return -1;
+}
+
+void execBuiltInCommand(int status,struct cmd *cmd){
+	status = (*builtin_func[status])(cmd->head->args);
 	return status;
 }
 
@@ -90,108 +98,6 @@ bool isnum(char *str)
   	return true;
 }
 
-int mypid(char **args)
-{
-	char fname[BUF_SIZE];
-	char buffer[BUF_SIZE];
-	if(strcmp(args[1], "-i") == 0) {
-
-	    pid_t pid = getpid();
-	    printf("%d\n", pid);
-	
-	} else if (strcmp(args[1], "-p") == 0) {
-	
-		if (args[2] == NULL) {
-      		printf("mypid -p: too few argument\n");
-      		return 1;
-    	}
-
-    	sprintf(fname, "/proc/%s/stat", args[2]);
-    	int fd = open(fname, O_RDONLY);
-    	if(fd == -1) {
-      		printf("mypid -p: process id not exist\n");
-     		return 1;
-    	}
-
-    	read(fd, buffer, BUF_SIZE);
-	    strtok(buffer, " ");
-    	strtok(NULL, " ");
-	    strtok(NULL, " ");
-    	char *s_ppid = strtok(NULL, " ");
-	    int ppid = strtol(s_ppid, NULL, 10);
-    	printf("%d\n", ppid);
-	    
-		close(fd);
-
-  	} else if (strcmp(args[1], "-c") == 0) {
-
-		if (args[2] == NULL) {
-      		printf("mypid -c: too few argument\n");
-      		return 1;
-    	}
-
-    	DIR *dirp;
-    	if ((dirp = opendir("/proc/")) == NULL){
-      		printf("open directory error!\n");
-      		return 1;
-    	}
-
-    	struct dirent *direntp;
-    	while ((direntp = readdir(dirp)) != NULL) {
-      		if (!isnum(direntp->d_name)) {
-        		continue;
-      		} else {
-        		sprintf(fname, "/proc/%s/stat", direntp->d_name);
-		        int fd = open(fname, O_RDONLY);
-        		if (fd == -1) {
-          			printf("mypid -p: process id not exist\n");
-          			return 1;
-        		}
-
-        		read(fd, buffer, BUF_SIZE);
-        		strtok(buffer, " ");
-        		strtok(NULL, " ");
-        		strtok(NULL, " ");
-		        char *s_ppid = strtok(NULL, " ");
-		        if(strcmp(s_ppid, args[2]) == 0)
-		            printf("%s\n", direntp->d_name);
-
-        		close(fd);
-     		}
-	   	}
-    	
-		closedir(dirp);
-	
-	} else {
-    	printf("wrong type! Please type again!\n");
-  	}
-	
-	return 1;
-}
-
-int add(char **args)
-{
-	
-	return 1;
-}
-
-int del(char **args)
-{
-	
-	return 1;
-}
-
-int ps(char **args)
-{
-	
-	return 1;
-}
-
-int start(char **args)
-{
-	
-	return 1;
-}
 
 const char *builtin_str[] = {
  	"help",
@@ -199,11 +105,6 @@ const char *builtin_str[] = {
 	"echo",
  	"exit",
  	"record",
-	"mypid",
-	"add",
-	"del",
-	"ps",
-	"start"
 };
 
 const int (*builtin_func[]) (char **) = {
@@ -212,11 +113,6 @@ const int (*builtin_func[]) (char **) = {
 	&echo,
 	&exit_shell,
   	&record,
-	&mypid,
-	&add,
-	&del,
-	&ps,
-	&start
 };
 
 int num_builtins() {
