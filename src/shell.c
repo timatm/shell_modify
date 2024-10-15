@@ -89,7 +89,7 @@ void shell()
 		        dup2(fd, 1);
 		        close(fd);
 			}
-			execBuiltInCommand(status,cmd);
+			status = execBuiltInCommand(status,cmd);
 			if (cmd->in_file)  dup2(in, 0);
 			if (cmd->out_file) dup2(out, 1);
 			close(in);
