@@ -13,15 +13,13 @@ int searchBuiltInCommand(struct cmd *cmd)
 {
 	for (int i = 0; i < num_builtins(); ++i){
 		if (strcmp(cmd->head->args[0], builtin_str[i]) == 0){
-			printf("built-in command is %d\n",i);
 			return i;
 		}
 	}
-	printf("command is not built-in command\n");
 	return -1;
 }
 
-void execBuiltInCommand(int status,struct cmd *cmd){
+int execBuiltInCommand(int status,struct cmd *cmd){
 	status = (*builtin_func[status])(cmd->head->args);
 	return status;
 }

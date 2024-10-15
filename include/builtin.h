@@ -4,7 +4,7 @@
 
 
 int searchBuiltInCommand(struct cmd *cmd);
-void execBuiltInCommand(int status,struct cmd *cmd);
+int execBuiltInCommand(int status,struct cmd *cmd);
 
 int help(char **args);
 int cd(char **args);

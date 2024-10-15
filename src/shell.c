@@ -66,7 +66,6 @@ void shell()
 		printf(">>> $ ");
 		
 		char *buffer = read_line();
-		printf("buffer:%s \n",buffer);
 		if (buffer == NULL)
 			continue;
 
