@@ -16,38 +16,11 @@ char *read_line()
 		if (buffer[0] == '\n' || buffer[0] == ' ' || buffer[0] == '\t') {
 			free(buffer);
 			buffer = NULL;
-		} else {
-			if (strncmp(buffer, "replay", 6) == 0) {
-				char *token = strtok(buffer, " ");
-				token = strtok(NULL, " ");
-				int index = strtol(token, NULL, 10);
-				if (index > MAX_RECORD_NUM || index > history_count) {
-					free(buffer);
-					buffer = NULL;
-				} else {
-					char *temp = (char *)malloc(BUF_SIZE * sizeof(char));
-					int head = 0;
-					if (history_count > MAX_RECORD_NUM) {
-						head += history_count % MAX_RECORD_NUM;
-					}
-					strncpy(temp, history[(head + index - 1) % MAX_RECORD_NUM], BUF_SIZE);
-					token = strtok(NULL, " ");
-					while (token) {
-						strcat(temp, " ");
-						strcat(temp, token);
-						token = strtok(NULL, " ");
-					}
-					strncpy(buffer, temp, BUF_SIZE);
-					free(temp);
-					buffer[strcspn(buffer, "\n")] = 0;
-					strncpy(history[history_count % MAX_RECORD_NUM], buffer, BUF_SIZE);
-					++history_count;
-				}
-			} else {
-				buffer[strcspn(buffer, "\n")] = 0;
-				strncpy(history[history_count % MAX_RECORD_NUM], buffer, BUF_SIZE);
-				++history_count;
-			}
+		} 
+		else {
+			buffer[strcspn(buffer, "\n")] = 0;
+			strncpy(history[history_count % MAX_RECORD_NUM], buffer, BUF_SIZE);
+			++history_count;
 		}
 	}
 
@@ -86,8 +59,6 @@ struct cmd *split_line(char *line)
         } else if (token[0] == '>') {
 			token = strtok(NULL, " ");
             new_cmd->out_file = token;
-        } else if (token[0] == '&') {
-            new_cmd->background = true;
         } else {
 			temp->args[temp->length] = token;
 			temp->length++;
@@ -113,5 +84,4 @@ void test_cmd_struct(struct cmd *cmd)
 	}
 	printf(" in: %s\n", cmd->in_file ? cmd->in_file : "none");
 	printf("out: %s\n", cmd->out_file ? cmd->out_file : "none");
-	printf("background: %s\n", cmd->background ? "true" : "false");
 }

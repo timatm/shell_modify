@@ -14,7 +14,6 @@ struct pipes {
 
 struct cmd {
 	struct pipes *head;
-	bool background;
     char *in_file, *out_file;
 };
 
