@@ -37,9 +37,9 @@ struct cmd *split_line(char *line)
 		new_cmd->head->args[i] = NULL;
     new_cmd->head->length = 0;
     new_cmd->head->next = NULL;
-    new_cmd->background = false;
     new_cmd->in_file = NULL;
     new_cmd->out_file = NULL;
+	new_cmd->pipe_num = 0;
 
 	struct pipes *temp = new_cmd->head;
     char *token = strtok(line, " ");
@@ -64,6 +64,8 @@ struct cmd *split_line(char *line)
 			temp->length++;
         }
         token = strtok(NULL, " ");
+		new_cmd->pipe_num++;
+
     }
 
     return new_cmd;
@@ -84,4 +86,14 @@ void test_cmd_struct(struct cmd *cmd)
 	}
 	printf(" in: %s\n", cmd->in_file ? cmd->in_file : "none");
 	printf("out: %s\n", cmd->out_file ? cmd->out_file : "none");
+}
+
+void test_pipe_struct(struct pipes *temp){
+	while (temp != NULL) {
+		for (int i = 0; i < temp->length; ++i) {
+			printf("%s ", temp->args[i]);
+		}
+		printf("\n");
+		temp = temp->next;
+	}
 }

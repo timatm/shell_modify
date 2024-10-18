@@ -19,8 +19,8 @@ int searchBuiltInCommand(struct cmd *cmd)
 	return -1;
 }
 
-int execBuiltInCommand(int status,struct cmd *cmd){
-	status = (*builtin_func[status])(cmd->head->args);
+int execBuiltInCommand(int status,struct pipes *cmd){
+	status = (*builtin_func[status])(cmd->args);
 	return status;
 }
 
