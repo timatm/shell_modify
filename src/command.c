@@ -4,6 +4,12 @@
 #include <string.h>
 #include "../include/command.h"
 
+/**
+ * @brief Read the user's input string
+ * 
+ * @return char* 
+ * Return string
+ */
 char *read_line()
 {
     char *buffer = (char *)malloc(BUF_SIZE * sizeof(char));
@@ -27,6 +33,13 @@ char *read_line()
 	return buffer;
 }
 
+/**
+ * @brief Parse the user's command
+ * 
+ * @param line User input command
+ * @return struct cmd* 
+ * Return the parsed cmd structure
+ */
 struct cmd *split_line(char *line)
 {
 	int args_length = 10;
@@ -70,11 +83,16 @@ struct cmd *split_line(char *line)
 
     return new_cmd;
 }
-
+/**
+ * @brief Information used to test the cmd structure
+ * 
+ * @param cmd Command struct
+ */
 void test_cmd_struct(struct cmd *cmd)
 {
 	struct pipes *temp = cmd->head;
 	int pipe_count = 0;
+	printf("============ COMMAND INFO ============\n");
 	while (temp != NULL) {
 		printf("pipe %d: ", pipe_count);
 		for (int i = 0; i < temp->length; ++i) {
@@ -86,9 +104,16 @@ void test_cmd_struct(struct cmd *cmd)
 	}
 	printf(" in: %s\n", cmd->in_file ? cmd->in_file : "none");
 	printf("out: %s\n", cmd->out_file ? cmd->out_file : "none");
+	printf("============ COMMAND INFO END ============\n");
 }
 
+/**
+ * @brief Information used to test the pipes structure
+ * 
+ * @param temp Pipes struct
+ */
 void test_pipe_struct(struct pipes *temp){
+	printf("============ PIPE INFO ============\n");
 	while (temp != NULL) {
 		for (int i = 0; i < temp->length; ++i) {
 			printf("%s ", temp->args[i]);
@@ -96,4 +121,5 @@ void test_pipe_struct(struct pipes *temp){
 		printf("\n");
 		temp = temp->next;
 	}
+	printf("============ PIPE INFO END ============\n");
 }

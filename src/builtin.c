@@ -9,6 +9,15 @@
 #include "../include/builtin.h"
 
 
+
+/**
+ * @brief 
+ * Determine whether cmd is a built-in command
+ * @param cmd Command struct
+ * @return int 
+ * If command is built-in command return function number
+ * If command is external command return -1 
+ */
 int searchBuiltInCommand(struct cmd *cmd)
 {
 	for (int i = 0; i < num_builtins(); ++i){
@@ -19,12 +28,20 @@ int searchBuiltInCommand(struct cmd *cmd)
 	return -1;
 }
 
+/**
+ * @brief Execute built-in command
+ * 
+ * @param status Choose which built-in command to execute
+ * @param cmd Command struct
+ * @return int 
+ * Return execution status
+ */
 int execBuiltInCommand(int status,struct pipes *cmd){
 	status = (*builtin_func[status])(cmd->args);
 	return status;
 }
 
-
+/*=================== Build-in command function ===================*/
 int help(char **args)
 {
 	int i;
