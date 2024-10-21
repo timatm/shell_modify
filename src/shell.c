@@ -9,55 +9,6 @@
 #include "../include/command.h"
 #include "../include/builtin.h"
 
-void execute_pipe(struct cmd *cmd) {
-	// "in" is the input of the current command
-	// "fd" is the file descriptor used to create the pipe
-    int in = 0, fd[2];  
-    struct pipes *currentCmd = cmd->head;
-    struct pipes *nextCmd = currentCmd->next;
-
-    while (currentCmd != NULL) {
-        // If there is a next command, create the pipe
-        if (nextCmd != NULL) {
-            if (pipe(fd) == -1) {
-                perror("Pipe creation failed");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        // Child process
-        if (fork() == 0) {
-            // Input and output redirection using redirection()
-            redirection(in, (nextCmd != NULL) ? fd[1] : 1, cmd);
-
-            // execute command
-            execvp(currentCmd->args[0], currentCmd->args);
-            perror("Exec failed");
-            exit(EXIT_FAILURE);
-        }
-
-        // 父進程：等待子進程完成，並管理管道
-        if (in != 0) {
-            close(in);  // 父進程關閉已經重定向過的讀端
-        }
-        if (nextCmd != NULL) {
-            close(fd[1]);  // 父進程關閉寫端，下一個命令將使用讀端
-        }
-
-        in = fd[0];  // 下一個命令的輸入變成當前命令的輸出
-
-        currentCmd = nextCmd;
-        if (nextCmd != NULL) {
-            nextCmd = nextCmd->next;
-        }
-    }
-
-    // // 等待所有子進程結束
-    // for (int i = 0; i < cmd->count; i++) {
-    //     wait(NULL);
-    // }
-}
-
 /**
  * @brief 
  * Redirect command's stdin and stdout to the specified file descriptor
@@ -67,13 +18,11 @@ void execute_pipe(struct cmd *cmd) {
  */
 void redirection(int in ,int out ,struct cmd *cmd){
 	int fd;
-	printf("in : %d \n",in);
-	printf("out: %d \n",out);
-	test_cmd_struct(cmd);
 	if (in != 0) {
           	dup2(in, 0);
           	close(in);
-	} else {
+	} 
+	else {
 		if (cmd->in_file) {
 			fd = open(cmd->in_file, O_RDONLY);
 			dup2(fd, 0);
@@ -83,7 +32,8 @@ void redirection(int in ,int out ,struct cmd *cmd){
 	if (out != 1) {
 		dup2(out, 1);
 		close(out);
-	} else {
+	} 
+	else {
 		if (cmd->out_file) {
 			fd = open(cmd->out_file, O_RDWR | O_CREAT, 0644);
 			dup2(fd, 1);
@@ -158,8 +108,6 @@ int fork_pipes(struct cmd *cmd)
     	spawn_proc(in, 1, cmd, temp);
     	return 1;
   	}
-
-  	spawn_proc(0, 1, cmd, cmd->head);
 	return 1;
 }
 void shell()
@@ -177,12 +125,9 @@ void shell()
 		// Only a single command
 		if(cmd->head->next == NULL){
 			status = searchBuiltInCommand(cmd);
-			printf("status  : %d\n",status);
 			if (status != -1){
 				int fd, in = dup(stdin), out = dup(stdout);
-				printf("in  : %d\n",in);
-				printf("out : %d\n",out);
-				// redirection(in,out,temp);
+				redirection(in,out,cmd);
 				status = execBuiltInCommand(status,cmd->head);
 
 				// recover shell stdin and stdout
@@ -195,14 +140,14 @@ void shell()
 				//external command
 				status = spawn_proc(0, 1, cmd, cmd->head);
 			}
-			test_pipe_struct(cmd->head);
 		}
-		//If use pipe
 		else{
+			// pipe
 			status = fork_pipes(cmd);
 		}
 		// free space
 		while (cmd->head) {
+			
 			struct pipes *temp = cmd->head;
       		cmd->head = cmd->head->next;
 			free(temp->args);

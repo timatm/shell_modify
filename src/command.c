@@ -86,7 +86,7 @@ struct cmd *split_line(char *line)
 /**
  * @brief Information used to test the cmd structure
  * 
- * @param cmd Command struct
+ * @param cmd Command structure
  */
 void test_cmd_struct(struct cmd *cmd)
 {
@@ -110,7 +110,7 @@ void test_cmd_struct(struct cmd *cmd)
 /**
  * @brief Information used to test the pipes structure
  * 
- * @param temp Pipes struct
+ * @param temp Pipes structure
  */
 void test_pipe_struct(struct pipes *temp){
 	printf("============ PIPE INFO ============\n");
