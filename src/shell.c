@@ -14,7 +14,7 @@
  * Redirect command's stdin and stdout to the specified file descriptor
  * @param in Stdin redirected object
  * @param out Stdout redirected object
- * @param cmd Command struct
+ * @param cmd Command structure
  */
 void redirection(int in ,int out ,struct cmd *cmd){
 	int fd;
@@ -46,11 +46,11 @@ void redirection(int in ,int out ,struct cmd *cmd){
 /**
  * @brief Execute external command
  * 
- * @param p Pipe format
+ * @param p Pipe structure
  * @return int 
  * Return execution status
  */
-int execute(struct pipes *p)
+int execute(struct cmd_node *p)
 {
 	return execvp(p->args[0], p->args);
 }
@@ -64,12 +64,12 @@ int execute(struct pipes *p)
  * 2. Call execute to " execute() " the corresponding executable file
  * @param in Stdin redirected object
  * @param out Stdout redirected object
- * @param cmd Command struct
- * @param p Pipe struct
+ * @param cmd Command structure
+ * @param p Pipe structure
  * @return int 
  * Return execution status
  */
-int spawn_proc(int in, int out, struct cmd *cmd, struct pipes *p)
+int spawn_proc(int in, int out, struct cmd *cmd, struct cmd_node *p)
 {
   	pid_t pid;
   	int status;
@@ -87,16 +87,16 @@ int spawn_proc(int in, int out, struct cmd *cmd, struct pipes *p)
 }
 
 /**
- * @brief Call "spawn_proc()" in order according to the number of pipes
+ * @brief Call "spawn_proc()" in order according to the number of cmd_node
  * 
- * @param cmd 
- * @param currentCmd 
- * @return int 
+ * @param cmd Command structure  
+ * @return int
+ * Return execution status 
  */
-int fork_pipes(struct cmd *cmd)
+int fork_cmd_node(struct cmd *cmd)
 {
   	int in = 0, fd[2];
-	struct pipes *temp = cmd->head;
+	struct cmd_node *temp = cmd->head;
   	while (temp->next != NULL) {
       	pipe(fd);
       	spawn_proc(in, fd[1], cmd, temp);
@@ -143,12 +143,12 @@ void shell()
 		}
 		else{
 			// pipe
-			status = fork_pipes(cmd);
+			status = fork_cmd_node(cmd);
 		}
 		// free space
 		while (cmd->head) {
 			
-			struct pipes *temp = cmd->head;
+			struct cmd_node *temp = cmd->head;
       		cmd->head = cmd->head->next;
 			free(temp->args);
    	    	free(temp);

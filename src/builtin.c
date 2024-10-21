@@ -36,7 +36,7 @@ int searchBuiltInCommand(struct cmd *cmd)
  * @return int 
  * Return execution status
  */
-int execBuiltInCommand(int status,struct pipes *cmd){
+int execBuiltInCommand(int status,struct cmd_node *cmd){
 	status = (*builtin_func[status])(cmd->args);
 	return status;
 }
@@ -51,7 +51,6 @@ int help(char **args)
 	for (i = 0; i < num_builtins(); i++) {
     	printf("%d: %s\n", i, builtin_str[i]);
   	}
-	printf("%d: replay\n", i);
     printf("--------------------------------------------------\n");
 	return 1;
 }

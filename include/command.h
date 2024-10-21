@@ -6,14 +6,14 @@
 
 #include <stdbool.h>
 
-struct pipes {
+struct cmd_node {
 	char **args;
 	int length;
-	struct pipes *next;
+	struct cmd_node *next;
 };
 
 struct cmd {
-	struct pipes *head;
+	struct cmd_node *head;
     char *in_file, *out_file;
 	int pipe_num;
 };
@@ -24,5 +24,5 @@ extern int history_count;
 char *read_line();
 struct cmd *split_line(char *);
 void test_cmd_struct(struct cmd *);
-void test_pipe_struct(struct pipes *pipe);
+void test_pipe_struct(struct cmd_node *pipe);
 #endif
